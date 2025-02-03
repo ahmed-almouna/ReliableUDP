@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "Net.h"
+#include "FileHandler.h"
 
 //#define SHOW_ACKS
 
@@ -118,6 +119,7 @@ private:
 
 int main(int argc, char* argv[])
 {
+	char fileName[kMaxFilenameLength] = "";
 	// parse command line
 
 	enum Mode
@@ -131,6 +133,7 @@ int main(int argc, char* argv[])
 
 	if (argc >= 2)
 	{
+		getFilename(fileName); //get file
 		int a, b, c, d;
 		#pragma warning(suppress : 4996)
 		if (sscanf(argv[1], "%d.%d.%d.%d", &a, &b, &c, &d))
