@@ -119,7 +119,13 @@ private:
 
 int main(int argc, char* argv[])
 {
-	char fileName[kMaxFilenameLength] = "";
+	char filename[kMaxFilenameLength] = "";
+	int fileSize = 0;
+	int* ptrFileSize = &fileSize;
+	char fileType;
+	char* ptrFileType = &fileType;
+	FILE* fp = NULL;
+
 	// parse command line
 
 	enum Mode
@@ -133,7 +139,7 @@ int main(int argc, char* argv[])
 
 	if (argc >= 2)
 	{
-		getFilename(fileName); //get file
+		getFilename(filename); // get file to send
 		int a, b, c, d;
 		#pragma warning(suppress : 4996)
 		if (sscanf(argv[1], "%d.%d.%d.%d", &a, &b, &c, &d))
@@ -162,14 +168,19 @@ int main(int argc, char* argv[])
 	}
 
 	if (mode == Client)
+	{
+		fp = openFile(filename, ptrFileSize, ptrFileType); //open specified file
+		char packet[PacketSize] = "";
+		readFile(fp, fileType, 3, packet);
 		connection.Connect(address);
+	}
 	else
 		connection.Listen();
 
 	bool connected = false;
 	float sendAccumulator = 0.0f;
 	float statsAccumulator = 0.0f;
-	int helloWorldCounter = 1;
+	int packetCounter = 0;
 
 	FlowControl flowControl;
 
@@ -213,14 +224,14 @@ int main(int argc, char* argv[])
 			memset(packet, 0, sizeof(packet)); //clear
 
 			char newPacket[PacketSize];
-			sprintf(newPacket, "Hello World <<%d>>", helloWorldCounter);
+			sprintf(newPacket, "Hello World <<%d>>", packetCounter);
 
 			sprintf((char*)packet, newPacket);
-			connection.SendPacket(packet, sizeof(packet));
+			//connection.SendPacket(packet, sizeof(packet));
 			sendAccumulator -= 1.0f / sendRate;
 
 			memset(newPacket, 0, sizeof(newPacket)); //clear
-			helloWorldCounter++;
+			packetCounter++;
 		}
 
 		while (true)

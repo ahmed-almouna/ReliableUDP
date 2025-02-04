@@ -1,6 +1,6 @@
 /*
 *   FILE           : FileHandler.h
-*   PROJECT        : PROG1385 - Assignment A1
+*   PROJECT        : SENG2040 - Assignment A1
 *   PROGRAMMERS    : Ray & Ahmed
 *   FIRST VERSION  : 2/3/2025
 *   DESCRIPTION    :
@@ -15,10 +15,20 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <filesystem>
+#include <iostream>
+#include <fstream>
+#include <conio.h>
 
-// prototypes
-void getFilename(char fileName[]);
-
+// namespaces
+using namespace std;
+using namespace filesystem;
 
 // constants
 const int kMaxFilenameLength = 100;
+const int kPacketSize = 256;
+
+// prototypes
+void getFilename(char fileName[]);
+FILE* openFile(char filename[], int* fileSize, char* fileType);
+void readFile(FILE* fp, char fileType, int packetCounter, char packet[kPacketSize]);
