@@ -10,14 +10,20 @@
 // include files
 #include "FileHandler.h"
 
+// static variables
+FILE* File::fp = NULL;
+char File::filename[kMaxFilenameLength] = "";
+char File::fileType = NULL;
+int File::fileSize = -1;
 
-// this function prompts the user for a filename and copies it to the 1st parameter
-void getFilename(char fileName[])
+
+
+// this function prompts the user for the file they want to send
+void File::getFilename(void)
 {
 	char userInput[kMaxFilenameLength] = "";
-	char filename[kMaxFilenameLength] = "";
 
-	/* get user filename */
+	/* get filename from user */
 	printf("Enter name of file to send: ");
 	fgets(userInput, sizeof(userInput), stdin);
 
@@ -25,27 +31,24 @@ void getFilename(char fileName[])
 	if (sscanf(userInput, "%s", &filename) != 1)
 	{
 		printf("Error: a filename was not provided.\n\n");
-		getFilename(userInput);
+		exit(1);
 	}
 
 	/* remove newline character (\n) from filename */
-	if (strchr(userInput, '\n') != NULL)
+	if (strchr(filename, '\n') != NULL)
 	{
-		userInput[strlen(userInput) - 1] = '\0';
+		filename[strlen(filename) - 1] = '\0';
 	}
-
-	strcpy(fileName, userInput);
 }
 
-// this function opens the specified file, updates the parameters with its meta-data, and returns a pointer to it
-FILE* openFile(char filename[], int* fileSize, char* fileType)
+// this function opens the specified file to obtain its meta-data
+void File::openFile(void)
 {
-	FILE* fp = NULL;
 	printf("Is this a Binary (B) or Text (T) file?");
-	*fileType = getch();
+	fileType = getch();
 
-	/* determine the type of the file & open it */
-	if (*fileType == 'T' || *fileType == 't')
+	/* determine file type & open it */
+	if (fileType == 'T' || fileType == 't')
 	{
 		if ((fp = fopen(filename, "r")) == NULL)
 		{
@@ -53,7 +56,7 @@ FILE* openFile(char filename[], int* fileSize, char* fileType)
 			exit(1);
 		}
 	}
-	else if (*fileType == 'B' || *fileType == 'b')
+	else if (fileType == 'B' || fileType == 'b')
 	{
 		if ((fp = fopen(filename, "rb")) == NULL)
 		{
@@ -67,39 +70,58 @@ FILE* openFile(char filename[], int* fileSize, char* fileType)
 		exit(1);
 	}
 
-	*fileSize = file_size(filename);
-	return fp;
+	fileSize = file_size(filename);
 }
 
 
-//// this function opens the specified file, updates the parameters with its meta-data, and returns a pointer to it
-//void readFile(FILE* fp, char fileType, int packetCounter, char packet[kPacketSize])
-//{
-//	char dataChunk[kPacketSize + 1] = "";
-//
-//	/* determine the type of the file & open it */
-//	if (fileType == 'T' || fileType == 't')
-//	{
-//		while (fgets(dataChunk, kPacketSize, fp) != NULL)
-//		{
-//			/* check for file I/O errors */
-//			if (ferror(fp))
-//			{
-//				printf("Error: file I/O error.\n");
-//				exit(1);
-//			}
-//		}
-//	}
-//	else if (fileType == 'B' || fileType == 'b')
-//	{
-//
-//	}
-//	else
-//	{
-//		printf("Error: invalid file type.\n");
-//		exit(1);
-//	}
-//
-//	strcpy(packet, dataChunk);
-//}
+// this function 
+void File::readFile(int packetCounter, char packet[kPacketSize + 1])
+{
+	/* 1st packet is file info message */
+	if (packetCounter == 1)
+	{
+		sprintf(packet, "%s|%s|%d||", kMessageTypes[0], filename, fileSize);
+		return;
+	}
+
+	/* rest of the packets is for file content */
+	char dataChunk[kPacketSize + 1] = "";
+	char counterAsString[kGenericStringLength] = "";
+	sprintf(counterAsString, "%d", packetCounter);
+	int headerLength = strlen(kMessageTypes[1]) + strlen(counterAsString) + 6; // 6 is the 3 pipes + 3 digit number for content length.
+
+	if (fileType == 'T' || fileType == 't')
+	{
+		if (fgets(dataChunk, kPacketSize - headerLength, fp) != NULL)
+		{
+			if (ferror(fp))
+			{
+				printf("Error: file I/O error.\n");
+				exit(1);
+			}
+
+			sprintf(packet, "%s|%d|%d|%s", kMessageTypes[1], packetCounter, strlen(dataChunk), dataChunk);
+		}
+		else // last packet (All done packet)
+		{
+			//sprintf(packet, "%s|%d||", kMessageTypes[2], ); //needs checksum
+		}
+	}
+	else if (fileType == 'B' || fileType == 'b')
+	{
+		if (fread(dataChunk, sizeof(byte), kPacketSize - headerLength, fp) > 0)
+		{
+			sprintf(packet, "%s|%d|%d|%s", kMessageTypes[1], packetCounter, strlen(dataChunk), dataChunk);
+		}
+		else
+		{
+			//sprintf(packet, "%s|%d||", kMessageTypes[2], ); //needs checksum
+		}
+	}
+	else
+	{
+		printf("Error: invalid file type.\n");
+		exit(1);
+	}
+}
 

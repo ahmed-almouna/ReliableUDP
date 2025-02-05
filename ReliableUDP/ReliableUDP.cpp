@@ -119,15 +119,9 @@ private:
 
 int main(int argc, char* argv[])
 {
-	char filename[kMaxFilenameLength] = "";
-	int fileSize = 0;
-	int* ptrFileSize = &fileSize;
-	char fileType;
-	char* ptrFileType = &fileType;
-	FILE* fp = NULL;
+
 
 	// parse command line
-
 	enum Mode
 	{
 		Client,
@@ -139,7 +133,7 @@ int main(int argc, char* argv[])
 
 	if (argc >= 2)
 	{
-		getFilename(filename); // get file to send
+		File::getFilename(); // get file to send
 		int a, b, c, d;
 		#pragma warning(suppress : 4996)
 		if (sscanf(argv[1], "%d.%d.%d.%d", &a, &b, &c, &d))
@@ -169,9 +163,7 @@ int main(int argc, char* argv[])
 
 	if (mode == Client)
 	{
-		fp = openFile(filename, ptrFileSize, ptrFileType); //open specified file
-		char packet[PacketSize] = "";
-		readFile(fp, fileType, 3, packet);
+		File::openFile(); //open specified file
 		connection.Connect(address);
 	}
 	else
@@ -180,7 +172,7 @@ int main(int argc, char* argv[])
 	bool connected = false;
 	float sendAccumulator = 0.0f;
 	float statsAccumulator = 0.0f;
-	int packetCounter = 0;
+	int packetCounter = 1;
 
 	FlowControl flowControl;
 
@@ -220,17 +212,21 @@ int main(int argc, char* argv[])
 
 		while (sendAccumulator > 1.0f / sendRate)
 		{
-			unsigned char packet[PacketSize];
+			//unsigned char packet[PacketSize];
+
+			char packet[PacketSize];
 			memset(packet, 0, sizeof(packet)); //clear
 
-			char newPacket[PacketSize];
-			sprintf(newPacket, "Hello World <<%d>>", packetCounter);
+			if (mode == Client)
+			{
+				File::readFile(packetCounter, packet);
+			}
 
-			sprintf((char*)packet, newPacket);
-			//connection.SendPacket(packet, sizeof(packet));
+			//sprintf(packet, "Hello World <<%d>>", packetCounter);
+
+			connection.SendPacket((unsigned char*)packet, sizeof(packet)); //note: casted to unsigned char*
 			sendAccumulator -= 1.0f / sendRate;
 
-			memset(newPacket, 0, sizeof(newPacket)); //clear
 			packetCounter++;
 		}
 
@@ -277,10 +273,10 @@ int main(int argc, char* argv[])
 			float sent_bandwidth = connection.GetReliabilitySystem().GetSentBandwidth();
 			float acked_bandwidth = connection.GetReliabilitySystem().GetAckedBandwidth();
 
-			printf("rtt %.1fms, sent %d, acked %d, lost %d (%.1f%%), sent bandwidth = %.1fkbps, acked bandwidth = %.1fkbps\n",
-				rtt * 1000.0f, sent_packets, acked_packets, lost_packets,
-				sent_packets > 0.0f ? (float)lost_packets / (float)sent_packets * 100.0f : 0.0f,
-				sent_bandwidth, acked_bandwidth);
+			//printf("rtt %.1fms, sent %d, acked %d, lost %d (%.1f%%), sent bandwidth = %.1fkbps, acked bandwidth = %.1fkbps\n",
+			//	rtt * 1000.0f, sent_packets, acked_packets, lost_packets,
+			//	sent_packets > 0.0f ? (float)lost_packets / (float)sent_packets * 100.0f : 0.0f,
+			//	sent_bandwidth, acked_bandwidth);
 
 			statsAccumulator -= 0.25f;
 		}

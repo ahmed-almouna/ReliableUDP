@@ -7,7 +7,7 @@
 *     The header file for FileHandler.cpp where all the necessary libraries, prototypes, and constants are.
 */
 
-//pragma statments
+// pragma statements
 #pragma once
 #pragma warning(disable: 4996)
 
@@ -26,9 +26,22 @@ using namespace filesystem;
 
 // constants
 const int kMaxFilenameLength = 100;
+const int kGenericStringLength = 100;
 const int kPacketSize = 256;
+const char kMessageTypes[3][3] = {"FI", "FC", "AD"};
 
-// prototypes
-void getFilename(char fileName[]);
-FILE* openFile(char filename[], int* fileSize, char* fileType);
-void readFile(FILE* fp, char fileType, int packetCounter, char packet[kPacketSize]);
+// class
+class File
+{
+	private:
+		static FILE* fp;
+		static char filename[kMaxFilenameLength];
+		static char fileType;
+		static int fileSize;
+
+	public:
+		// prototypes
+		static void getFilename(void);
+		static void openFile(void);
+		static void readFile(int packetCounter, char packet[kPacketSize + 1]);
+};
