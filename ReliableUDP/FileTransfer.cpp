@@ -10,46 +10,48 @@
 #include "FileHandler.h"
 #include "ReliableUDP.h"
 #include <iostream>
-#include <ftsream>
+#include <fstream>
+#include <chrono> // Timing speed calculation
 
 using namespace std;
 
-void receiveFile(const char* outputFileName) 
-	FILE* receivedFile = nullptr;
-	char packet[kPacketSize]; // initialize packet buffer
-	int packetCounter = 0;
+// Open file for writing in binary mode
+void receiveFile(FILE* receivedFile, ReliableConnection& connection) {
+    if (!receivedFile) {
+        cerr << "Error: File pointer is NULL!" << endl;
+        return;
+    }
 
-	// Set up some sort of receiver here to listen for incoming packets
+    unsigned char packet[kPacketSize];  // Packet buffer
+    int bytesReceived;
+    auto startTime = chrono::high_resolution_clock::now();  // Start timing transfer
 
-	// Open file to store the data in binary mode? safer this way
-	receivedFile = fopen(outputFilename, 'wb');
+    long totalBytesReceived = 0; // Track total bytes received
 
-	// just theoretical for now
-	if (receivedFile == NULL) {
-		cerr << "Error: Could not open file." << endl;
-		exit(1);
-	}
+    while (true) {
+        // Receive packets 
+        bytesReceived = connection.ReceivePacket(packet, sizeof(packet));
 
-	// Loop for receiving and writing file data in the packets
-	while (true) {
-		// count the bytes
+        if (bytesReceived <= 0) {
+            break;  // Exit when no more data is received
+        }
 
-		// if the bytes received is less than or = 0, EoF error
-	}
+        // Write packet data to the file
+        fwrite(packet, 1, bytesReceived, receivedFile);
+        totalBytesReceived += bytesReceived;
+    }
 
-	// Write packets to file (in binary)
+    auto endTime = chrono::high_resolution_clock::now();  // End time
 
-	// Close the file
-	fclose(receivedFile);
+    // Calculate transfer time
+    auto duration = chrono::duration_cast<chrono::milliseconds>(endTime - startTime);
+    double transferTimeInSeconds = duration.count() / 1000.0;
 
-	cout << "File received successfully." << endl; 
-}
+    // Calculate transfer speed in megabits per second
+    double transferSpeed = (totalBytesReceived * 8.0) / (1024 * 1024 * transferTimeInSeconds);
 
-// Entry for receiving a file
-int main() {
-	charOutputFilename[kMaxFileLength];
-	cout << "Enter the name of the file: ";
-	cin >> outputFileName;
+    cout << "File received successfully in " << transferTimeInSeconds << " seconds." << endl;
+    cout << "Transfer speed: " << transferSpeed << " Mbps" << endl;
 
-	return 0;
+    fclose(receivedFile);
 }
