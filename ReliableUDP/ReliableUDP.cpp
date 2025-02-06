@@ -6,13 +6,14 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <vector>
 
 #include "Net.h"
 #include "FileHandler.h"
 
 //#define SHOW_ACKS
- 
+
 using namespace std;
 using namespace net;
 
@@ -120,7 +121,7 @@ int main(int argc, char* argv[])
 {
 
 
-	// Parse command line
+	// parse command line
 	enum Mode
 	{
 		Client,
@@ -132,7 +133,7 @@ int main(int argc, char* argv[])
 
 	if (argc >= 2)
 	{
-		File::getFilename(); // Get file to send
+		File::getFilename(); // get file to send
 		int a, b, c, d;
 		#pragma warning(suppress : 4996)
 		if (sscanf(argv[1], "%d.%d.%d.%d", &a, &b, &c, &d))
@@ -142,7 +143,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	// Initialize
+	// initialize
 
 	if (!InitializeSockets())
 	{
@@ -162,21 +163,13 @@ int main(int argc, char* argv[])
 
 	if (mode == Client)
 	{
-		File::openFile(); // Open specified file
+		File::openFile(); //open specified file
 		connection.Connect(address);
-		connection.SendFile("C:/downloads") // Where to send file
 	}
-	else {
-		connection.Listen(); // Listen for connections
+	else
+		connection.Listen();
 
-		bool connected = false;
-		while (true) {
-			if (!connected && connection.IsConnected()) {
-				connected = true;
-			}
-		}
-	}
-	
+	bool connected = false;
 	float sendAccumulator = 0.0f;
 	float statsAccumulator = 0.0f;
 	int packetCounter = 1;
@@ -243,10 +236,10 @@ int main(int argc, char* argv[])
 			int bytes_read = connection.ReceivePacket(packet, sizeof(packet));
 			if (bytes_read == 0)
 				break;
-			printf("%s", packet);
+			printf("%s", packet);//
 		}
 
-		// Show packets that were acked this frame
+		// show packets that were acked this frame
 
 #ifdef SHOW_ACKS
 		unsigned int* acks = NULL;
@@ -261,11 +254,11 @@ int main(int argc, char* argv[])
 		}
 #endif
 
-		// Update connection
+		// update connection
 
 		connection.Update(DeltaTime);
 
-		// Show connection stats
+		// show connection stats
 
 		statsAccumulator += DeltaTime;
 

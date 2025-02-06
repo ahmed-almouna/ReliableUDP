@@ -100,7 +100,7 @@ void File::readFile(int packetCounter, char packet[kPacketSize + 1])
 				exit(1);
 			}
 
-			sprintf(packet, "%s|%d|%d|%s", kMessageTypes[1], packetCounter, strlen(dataChunk), dataChunk);
+			sprintf(packet, "%s|%d|%ulld|%s", kMessageTypes[1], packetCounter, strlen(dataChunk), dataChunk); //note try ulld instead of %d
 		}
 		else // last packet (All done packet)
 		{
@@ -111,7 +111,7 @@ void File::readFile(int packetCounter, char packet[kPacketSize + 1])
 	{
 		if (fread(dataChunk, sizeof(byte), kPacketSize - headerLength, fp) > 0)
 		{
-			sprintf(packet, "%s|%d|%d|%s", kMessageTypes[1], packetCounter, strlen(dataChunk), dataChunk);
+			sprintf(packet, "%s|%d|%d|%s", kMessageTypes[1], packetCounter, strlen(dataChunk), dataChunk); //treating binary data as a string might be an issue
 		}
 		else
 		{
