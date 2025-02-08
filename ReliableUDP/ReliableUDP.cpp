@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
 
 	if (mode == Client)
 	{
-		File::openFile(); //open specified file
+		File::openFile(); // open specified file
 		connection.Connect(address);
 	}
 	else
@@ -212,31 +212,32 @@ int main(int argc, char* argv[])
 
 		while (sendAccumulator > 1.0f / sendRate)
 		{
-			//unsigned char packet[PacketSize];
-
-			char packet[PacketSize];
-			memset(packet, 0, sizeof(packet)); //clear
+			unsigned char packet[PacketSize];
+			memset(packet, 0, sizeof(packet));
 
 			if (mode == Client)
 			{
-				File::readFile(packetCounter, packet);
+				File::readFile(packetCounter, (char*)packet); // send file
 			}
 
-			//sprintf(packet, "Hello World <<%d>>", packetCounter);
-
-			connection.SendPacket((unsigned char*)packet, sizeof(packet)); //note: casted to unsigned char*
+			connection.SendPacket(packet, sizeof(packet));
 			sendAccumulator -= 1.0f / sendRate;
-
 			packetCounter++;
 		}
 
 		while (true)
 		{
-			unsigned char packet[256];
+			unsigned char packet[PacketSize];
+
 			int bytes_read = connection.ReceivePacket(packet, sizeof(packet));
 			if (bytes_read == 0)
 				break;
-			printf("%s", packet);//
+
+			if (mode == Server)
+			{
+				File::receiveFile((char*)packet); // receieve file
+				printf("\n%s\n", packet);
+			}
 		}
 
 		// show packets that were acked this frame
