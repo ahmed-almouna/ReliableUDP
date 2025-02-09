@@ -98,7 +98,7 @@ void File::readFile(int packetCounter, char packet[kPacketSize])
 		}
 		else // all done packet
 		{
-			//sprintf(packet, "%s|%d||", kMessageTypes[2], ); //needs checksum
+			//sprintf(packet, "%s|%d||", kMessageTypes[2], *checksum*); //NOTE!! needs checksum
 			if (!fileClosed)
 				closeFile(fp);
 		}
@@ -113,7 +113,7 @@ void File::readFile(int packetCounter, char packet[kPacketSize])
 		}
 		else
 		{
-			//sprintf(packet, "%s|%d||", kMessageTypes[2], ); //needs checksum
+			//sprintf(packet, "%s|%d||", kMessageTypes[2], *checksum*); //NOTE!! needs checksum
 			if (!fileClosed)
 				closeFile(fp);
 		}
@@ -173,7 +173,7 @@ void File::receiveFile(char packet[kPacketSize])
 	/* all done packet */
 	else if (strncmp(packet, kMessageTypes[2], strlen(kMessageTypes[2])) == 0)
 	{
-		// check if checksum matches
+		// NOTE!! check if checksum matches
 		closeFile(fp);
 	}
 }
