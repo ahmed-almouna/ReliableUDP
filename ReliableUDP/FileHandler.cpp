@@ -9,6 +9,8 @@
 
 // include files
 #include "FileHandler.h"
+#include <stdio.h>
+#include <direct.h>
 
 // File class variables
 FILE* File::fp = NULL;
@@ -50,6 +52,11 @@ void File::openFile(void)
 	/* determine file type & open it */
 	if (fileType == 'T' || fileType == 't')
 	{
+		//char cwd[333];
+		//if (_getcwd(cwd, sizeof(cwd)) != NULL) {
+		//	printf("Current working dir: %s\n", cwd);
+		//}
+
 		if ((fp = fopen(filename, "r")) == NULL)
 		{
 			printf("Error: can not open file.\n");
