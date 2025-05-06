@@ -30,3 +30,4 @@ Assuming a receiver is running on 172.2.16.10; run the following
 You will be asked to enter the name of the file to send (must be in your *current directory*). And whether the file is a binary [e.g jpg] or a text [e.g .txt] file.
 
 File transfer will begin!
+
