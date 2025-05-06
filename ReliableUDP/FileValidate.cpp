@@ -1,11 +1,12 @@
-///*
-//*   FILE           : FileValidate.cpp
-//*   PROJECT        : SENG2040 - Assignment A1
-//*   PROGRAMMERS    : Ray & Ahmed
-//*   FIRST VERSION  : 2/3/2025
-//*   DESCRIPTION    : Verify the integrity of the file using checksums and ensure the file is not corrupted during transfer.
-//*/
-//
+/*
+*   FILE           : FileValidate.cpp
+*   PROJECT        : SENG2040 - Assignment A1
+*   PROGRAMMERS    : Ray & Ahmed
+*   FIRST VERSION  : 2/3/2025
+*   DESCRIPTION    : Verify the integrity of the file using checksums and ensure the file is not corrupted during transfer.
+*/
+
+// Note uncomment after TESTING
 //#include "FileHandler.h"
 //#include <iostream>
 //#include <fstream>

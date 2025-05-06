@@ -1,12 +1,13 @@
-///*
-//*   FILE           : FileTransfer.cpp
-//*   PROJECT        : SENG2040 - Assignment A1
-//*   PROGRAMMERS    : Ray & Ahmed
-//*   FIRST VERSION  : 2/3/2025
-//*   DESCRIPTION    : All the necessary functions to handle the receiving and reassembly of the files from the sender.
-//*					 Receives packets, processes the metadata and writes to the file.
-//*/
-//
+/*
+*   FILE           : FileTransfer.cpp
+*   PROJECT        : ReliableUDP
+*   PROGRAMMERS    : Ray & Ahmed
+*   FIRST VERSION  : 2/3/2025
+*   DESCRIPTION    : All the necessary functions to handle the receiving and reassembly of the files from the sender.
+*					 Receives packets, processes the metadata and writes to the file.
+*/
+
+// Note uncomment after TESTING
 //#include "FileHandler.h"
 //#include "ReliableUDP.h"
 //#include <iostream>

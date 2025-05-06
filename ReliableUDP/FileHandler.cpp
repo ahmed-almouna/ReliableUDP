@@ -1,6 +1,6 @@
 /*
 *   FILE           : FileHandler.cpp
-*   PROJECT        : SENG2040 - Assignment A1
+*   PROJECT        : ReliableUDP
 *   PROGRAMMERS    : Ray & Ahmed
 *   FIRST VERSION  : 2/3/2025
 *   DESCRIPTION    :
